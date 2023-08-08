@@ -15,16 +15,16 @@ const AddProduct = () => {
     category: "",
     brand: "",
   });
-  const [pro, setPro] = useState({
-    title: "",
-    // _id: 0,
-    discountPercentage: 0,
-    thumbnail: "",
-    price: 0,
-    rating: 0,
-    category: "",
-    brand: "",
-  });
+  // const [pro, setPro] = useState({
+  //   title: "",
+  //   // _id: 0,
+  //   discountPercentage: 0,
+  //   thumbnail: "",
+  //   price: 0,
+  //   rating: 0,
+  //   category: "",
+  //   brand: "",
+  // });
   const handleChange = (e) => {
     setProduct({
       ...product,
@@ -34,15 +34,29 @@ const AddProduct = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setProduct({ ...product, e });
-    console.log(product);
-    await addProduct(product);
-    setProduct(setPro);
+    // console.log();
+    const addp = {
+      title: product.title,
+      // _id: 0,
+      discountPercentage: product.discountPercentage,
+      thumbnail: [product.thumbnail],
+      price: product.price,
+      rating: product.rating,
+      category: product.category,
+      brand: product.brand,
+    };
+    console.log(addp);
+    // setProduct({ ...product, e });
+    // console.log(product);
+    await addProduct(addp);
   };
 
   const addProduct = async (product) => {
     try {
-      const res = await axios.post("api/products/c", product);
+      const res = await axios.post(
+        "http://localhost:8080/api/products/c",
+        product
+      );
       console.log(res.data);
     } catch (error) {
       console.error("Error adding product:", error);

@@ -30,6 +30,7 @@ exports.getProduct = async (req, res) => {
 };
 
 exports.createProduct = async (req, res) => {
+  console.log(req.body);
   const p = new Product(req.body);
   // p.title = "New xioami";
   // p.price = 353;

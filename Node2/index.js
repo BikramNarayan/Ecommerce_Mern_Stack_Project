@@ -1,45 +1,54 @@
-const { log } = require("console");
-const app = require("http");
-const fs = require("fs");
-const index = fs.readFileSync("index.html", "utf-8");
-const data2 = JSON.parse(fs.readFileSync("data.json", "utf-8"));
-const product = data2.products[0];
-const data = { age: 5 };
-const server = app.createServer((req, res) => {
-  console.log("Server started");
-  res.setHeader("Dummy", "Dummyvalue");
-  if (req.url.startsWith("/product")) {
-    console.log(req.url, req.method);
-    const id = req.url.split("/")[2];
-    const product_id = data2.products[id];
-    // console.log(id);
-    res.setHeader("Content-Type", "text/html");
-    const modified_index = index
-      .replace("**title**", product_id.title)
-      .replace("**url**", product_id.thumbnail)
-      .replace("**price**", product_id.price)
-      .replace("**rating**", product_id.rating);
-    //   res.end(modifiedIndex);
-    res.end(modified_index);
-  }
+const express = require("express");
+require("dotenv").config();
+const morgan = require("morgan");
+const mongoose = require("mongoose");
+const cors = require("cors");
+const path = require("path"); // Add this line to include the 'path' module
 
-  switch (req.url) {
-    case "/":
-      res.setHeader("Content-Type", "text/html");
-      const modified_index = index
-        .replace("**title**", product.title)
-        .replace("**url**", product.thumbnail)
-        .replace("**price**", product.price)
-        .replace("**rating**", product.rating);
-      //   res.end(modifiedIndex);
-      res.end(modified_index); // Remove JSON.stringify here
-      break;
+main().catch((err) => console.log(err));
 
-    case "/api":
-      res.setHeader("Content-Type", "application/json");
-      res.end(JSON.stringify(data));
-      break;
-  }
+async function main() {
+  // console.log("hi");
+  console.log(process.env.MONGO_URL);
+  await mongoose.connect(
+    // "mongodb+srv://bikramnarayandhanraj:BndAtlas@bnd.jwelvff.mongodb.net/?retryWrites=true&w=majority"
+    process.env.MONGO_URL
+  );
+  console.log("database created");
+}
+
+const server = express();
+
+server.use(cors());
+server.use(express.json());
+
+const product_router = require("./routes/routes");
+const user_router = require("./routes/user");
+server.use("/api", product_router.product_router);
+server.use("/apii", user_router.user_router);
+
+server.use(morgan("default"));
+
+// Use 'path' module to join the path for serving static files
+// server.use(express.static(path.join(build, "./public/build")));
+// server.use(express.static(path.resolve(__dirname, process.env.PUBLIC_DIR)));
+
+// server.use("*", (req, res) => {
+//   res.sendFile(path.resolve(__dirname, "build", "index.html"));
+// });
+// Make sure to adjust the path accordingly
+
+server.listen(8080, () => {
+  console.log("Express server started");
+  console.log("env", process.env.DB_PASSWORD);
 });
 
-server.listen(8080);
+const autho = (req, res, next) => {
+  next();
+};
+
+server.use(autho);
+
+server.put("/", (req, res) => {
+  res.json({ type: "Put" });
+});

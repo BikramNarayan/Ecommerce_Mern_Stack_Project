@@ -6,13 +6,13 @@ const p = Data.products;
 export default function Product() {
   const [product, setProduct] = useState(p);
   const getProduct = async () => {
-    const res = await axios.get("/api/products");
+    const res = await axios.get("http://localhost:8080/api/products");
     console.log(res.data);
     setProduct(res.data);
   };
 
   const handleClick = async (id) => {
-    const res = await axios.delete(`/api/products/${id}`);
+    const res = await axios.delete(`http://localhost:8080/api/products/${id}`);
     console.log(res.data);
     setProduct(res.data);
   };
